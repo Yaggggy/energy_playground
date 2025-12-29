@@ -25,13 +25,43 @@ export default function App() {
   const socket = useRef(null);
 
   useEffect(() => {
+    let timeout;
+
     const connect = () => {
+      // Close existing connection if any
+      if (socket.current && socket.current.readyState !== WebSocket.CLOSED) {
+        return;
+      }
+
+      console.log("Attempting to connect to Grid Server...");
       socket.current = new WebSocket("ws://localhost:8000/ws");
-      socket.current.onmessage = (e) => setData(JSON.parse(e.data));
-      socket.current.onclose = () => setTimeout(connect, 2000);
+
+      socket.current.onopen = () => {
+        console.log("✅ Connected to Grid Server");
+      };
+
+      socket.current.onmessage = (e) => {
+        // Only parse if data exists
+        if (e.data) setData(JSON.parse(e.data));
+      };
+
+      socket.current.onclose = () => {
+        console.warn("⚠️ Disconnected. Retrying in 3 seconds...");
+        timeout = setTimeout(connect, 3000); // Auto-reconnect
+      };
+
+      socket.current.onerror = (err) => {
+        console.error("❌ Socket Error (Is backend running?)", err);
+        socket.current.close();
+      };
     };
+
     connect();
-    return () => socket.current?.close();
+
+    return () => {
+      clearTimeout(timeout);
+      if (socket.current) socket.current.close();
+    };
   }, []);
 
   const sendAction = (type, val) => {
