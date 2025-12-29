@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;800&display=swap");
+
+:root {
+  --neon: #00f2ff;
+  --danger: #ff0055;
+  --bg: #050a0f;
+  --glass: rgba(10, 20, 30, 0.85);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #fff;
+  font-family: "JetBrains Mono", monospace;
+  overflow: hidden;
+}
+
+.scada-container {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.glass-panel {
+  pointer-events: all;
+  background: var(--glass);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 320px;
+  border-left: 4px solid var(--neon);
+}
+.title {
+  font-family: "Orbitron";
+  color: var(--neon);
+  margin: 0 0 20px 0;
+  font-size: 1.2rem;
+}
+
+.asset-card {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.asset-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #666;
+}
+.asset-val {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--neon);
+}
+
+.control-deck {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.slider-unit {
+  width: 250px;
+  text-align: left;
+}
+.slider-unit label {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #888;
+}
+
+input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  accent-color: var(--neon);
+  height: 2px;
+}
+
+.DESTROYED {
+  color: var(--danger);
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.3;
+  }
+}
