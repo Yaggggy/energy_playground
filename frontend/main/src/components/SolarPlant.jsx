@@ -1,43 +1,43 @@
-import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
-import { MeshDistortMaterial, Float, Html } from "@react-three/drei";
+import { MeshDistortMaterial } from "@react-three/drei";
 
 export default function SolarPlant({ stats }) {
-  const meshRef = useRef();
-  const stress = 1 - stats.health / 100;
-
+  const heatFactor = Math.min(stats.heat / 1500, 1);
   return (
     <group>
-      {/* Floating Telemetry Box (AR Style) */}
-      <Html position={[0, 7, 0]} center distanceFactor={10}>
-        <div className={`ar-telemetry ${stress > 0.5 ? "critical" : ""}`}>
-          <div className="label">UNIT_02_CORE</div>
-          <div className="data">{stats.heat.toFixed(0)}°C</div>
-          {stress > 0.1 && (
-            <div className="ttf">TTF: {stats.ttf?.toFixed(0)}s</div>
-          )}
-        </div>
-      </Html>
+      {/* Central Tower */}
+      <mesh position={[0, 8, 0]} castShadow>
+        <cylinderGeometry args={[1, 1.5, 16]} />
+        <meshStandardMaterial color="#64748b" />
+      </mesh>
 
-      <Float
-        speed={5 * stress}
-        rotationIntensity={stress}
-        floatIntensity={stress}
-      >
-        <mesh ref={meshRef} castShadow>
-          <cylinderGeometry args={[0.5, 0.8, 6, 32]} />
-          {/* This material distorts the geometry based on stress */}
-          <MeshDistortMaterial
-            speed={stress * 10}
-            distort={stress * 0.4}
-            color={stress > 0.5 ? "#ff0000" : "#ffffff"}
-            emissive={stress > 0.2 ? "#ff0000" : "#000000"}
-            emissiveIntensity={stress * 5}
-            metalness={1}
-            roughness={0.1}
+      {/* The "Sun" Receiver - Glows Red/Orange */}
+      <mesh position={[0, 16, 0]}>
+        <sphereGeometry args={[3, 32, 32]} />
+        <MeshDistortMaterial
+          distort={heatFactor * 0.4}
+          speed={3}
+          color="#fbbf24"
+          emissive="#ef4444"
+          emissiveIntensity={heatFactor * 4}
+        />
+      </mesh>
+
+      {/* Solar Panel Array */}
+      {[...Array(24)].map((_, i) => (
+        <mesh
+          key={i}
+          position={[Math.sin(i) * 20, 1, Math.cos(i) * 20]}
+          rotation={[-0.5, 0, 0]}
+          castShadow
+        >
+          <boxGeometry args={[5, 0.2, 5]} />
+          <meshStandardMaterial
+            color="#1e293b"
+            roughness={0.2}
+            metalness={0.8}
           />
         </mesh>
-      </Float>
+      ))}
     </group>
   );
 }
